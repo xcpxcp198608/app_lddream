@@ -1,6 +1,7 @@
 package com.wiatec.lddream;
 
-import com.px.common.utils.CommonApplication;
+
+import com.px.common.constant.CommonApplication;
 
 /**
  * Created by patrick on 22/07/2017.
@@ -14,6 +15,6 @@ public class Application extends CommonApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        AD_IMAGE_PATH = getExternalFilesDir("ad_images").getAbsolutePath();
+        AD_IMAGE_PATH = getExternalFilesDir("images").getAbsolutePath();
     }
 }

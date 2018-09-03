@@ -6,11 +6,17 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.px.common.constant.CommonApplication;
+import com.px.common.constant.CommonConstant;
+import com.px.common.entities.ImageInfo;
 import com.px.common.http.HttpMaster;
-import com.px.common.http.Listener.StringListener;
-import com.px.common.utils.CommonApplication;
+import com.px.common.http.listener.DownloadListener;
+import com.px.common.http.listener.StringListener;
+import com.px.common.http.pojo.DownloadInfo;
+import com.px.common.http.pojo.Result;
+import com.px.common.provider.AgentProvider;
 import com.px.common.utils.Logger;
-import com.px.common.utils.NetUtils;
+import com.px.common.utils.NetUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +41,7 @@ public class ImageDownloadService extends IntentService {
             @Override
             public void run() {
                 do {
-                    if(NetUtils.isConnected(CommonApplication.context)) {
+                    if(NetUtil.isConnected()) {
                         loadImage();
                     }
                 } while (!isDownload);
@@ -46,12 +52,19 @@ public class ImageDownloadService extends IntentService {
 
     private void loadImage() {
         isDownload = true;
-        HttpMaster.get(F.url.ad_image)
+        HttpMaster.get(CommonConstant.url.ad_images)
+                .param(CommonConstant.key.type, AgentProvider.getType())
+                .param(CommonConstant.key.agentId, AgentProvider.getAgentId())
+                .param(CommonConstant.key.platform, AgentProvider.getPlatform())
+                .param(CommonConstant.key.location, "36")
                 .enqueue(new StringListener() {
                     @Override
                     public void onSuccess(String s) throws IOException {
-                        List<ImageInfo> imageList = new Gson().fromJson(s,
-                                new TypeToken<List<ImageInfo>>(){}.getType());
+                        Result<List<ImageInfo>> result = new Gson().fromJson(s,
+                                new TypeToken<Result<List<ImageInfo>>>(){}.getType());
+                        if(result == null)return;
+                        List<ImageInfo> imageList = result.getData();
+                        if(imageList == null || imageList.size() <= 0) return;
                         Logger.d(imageList.toString());
                         List<String> nameList = new ArrayList<>();
                         if(imageList.size() > 0){
@@ -77,7 +90,42 @@ public class ImageDownloadService extends IntentService {
                 .name(i.getName())
                 .url(i.getUrl())
                 .path(Application.AD_IMAGE_PATH)
-                .startDownload(null);
+                .startDownload(new DownloadListener() {
+                    @Override
+                    public void onPending(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onStart(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onPause(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onProgress(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onFinished(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onCancel(DownloadInfo downloadInfo) {
+
+                    }
+
+                    @Override
+                    public void onError(DownloadInfo downloadInfo) {
+
+                    }
+                });
     }
 
     private void deleteOldImage(List<String> nameList){

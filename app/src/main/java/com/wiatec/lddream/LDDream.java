@@ -2,10 +2,10 @@ package com.wiatec.lddream;
 
 import android.content.Intent;
 import android.service.dreams.DreamService;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.px.common.image.ImageMaster;
 
 import java.io.File;
 import java.util.Random;
@@ -71,8 +71,7 @@ public class LDDream extends DreamService{
     private void showImage(){
         String path = getImagePath();
         if(path != null){
-            Glide.with(this).load(getImagePath()).placeholder(R.drawable.img_hold4)
-                    .error(R.drawable.img_hold4).dontAnimate().into(ivDream);
+            ImageMaster.load(getImagePath(), ivDream);
         }
     }
 
